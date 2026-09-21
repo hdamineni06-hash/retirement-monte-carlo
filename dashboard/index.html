@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retirement Withdrawal Monte Carlo</title>
+<meta name="description" content="Interactive Monte Carlo simulation of retirement portfolio withdrawal sustainability, bootstrapped from historical SPY/AGG returns.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="eyebrow">Personal Finance / Quant Project</div>
+    <h1>Retirement Withdrawal Monte Carlo Simulator</h1>
+    <p class="subtitle">
+      Bootstrapped from 22 years of historical SPY/AGG returns — not a normal-distribution
+      assumption — to stress-test how long a 60/40 portfolio survives a range of withdrawal
+      rates, with traditional/Roth sequencing and SECURE&nbsp;2.0 RMDs applied each year.
+    </p>
+  </header>
+
+  <section class="headline-grid" aria-label="Headline findings">
+    <div class="headline-card accent">
+      <div class="headline-label">Success rate at the 4% rule</div>
+      <div class="headline-value" id="headline-4pct">—</div>
+      <div class="headline-note">10,000 simulated 30-year retirements, after federal tax &amp; RMDs</div>
+    </div>
+    <div class="headline-card">
+      <div class="headline-label">Withdrawal rate for ≥90% success</div>
+      <div class="headline-value" id="headline-safe">—</div>
+      <div class="headline-note">The classic 4% rule doesn't clear this bar under these assumptions</div>
+    </div>
+  </section>
+
+  <section class="assumptions" aria-label="Model assumptions">
+    <h2>Key Assumptions</h2>
+    <div class="assumptions-grid" id="assumptions-grid"></div>
+  </section>
+
+  <section class="chart-section">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2>Success Rate vs. Withdrawal Rate</h2>
+        <p>Percent of simulated retirements that never fully deplete the portfolio over the 30-year horizon, swept from 3.00% to 5.00% in 0.25% steps.</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="successChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2>Sample Simulated Portfolio Paths</h2>
+        <p id="paths-subtitle">A random sample of simulated paths at the 4.00% withdrawal rate, with the median and 10th–90th percentile band across all 10,000 simulations.</p>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="pathsChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section class="methodology">
+    <h2>Methodology</h2>
+    <ul>
+      <li><strong>Return simulation:</strong> annual returns for SPY and AGG are pulled via <code>yfinance</code>, blended 60/40 and rebalanced annually, then bootstrapped (sampled with replacement) to build 10,000 thirty-year market paths — no assumption of normally distributed returns.</li>
+      <li><strong>Withdrawal sequencing:</strong> the portfolio is split into a traditional (tax-deferred) and Roth (tax-free) bucket. Discretionary spending draws from the traditional bucket first, then Roth, so the tax-deferred balance — and future RMDs — shrink faster.</li>
+      <li><strong>RMDs:</strong> starting at age 73 (SECURE 2.0), the traditional bucket is forced to distribute at least the IRS Uniform Lifetime Table amount each year, regardless of spending need. Any distribution beyond that year's need is reinvested after tax.</li>
+      <li><strong>Taxes:</strong> traditional withdrawals and RMDs are taxed at a flat 22% federal rate; state tax is ignored. Roth withdrawals are tax-free.</li>
+      <li><strong>Spending:</strong> the withdrawal rate sets year-1 spending as a percent of the starting portfolio; spending then grows with 2.5% assumed inflation each year in real terms.</li>
+    </ul>
+  </section>
+
+  <footer class="footer">
+    <p>Built with Python (NumPy bootstrap Monte Carlo, pandas, yfinance) and Chart.js. Source data cached from Yahoo Finance.</p>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
